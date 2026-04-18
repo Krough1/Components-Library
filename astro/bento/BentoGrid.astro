@@ -1,0 +1,398 @@
+---
+// BentoGrid — Dot-divider label + heading + 1-large/2-stacked bento + logos bar
+//
+// Required CSS variables:
+//   --color-bg
+//   --color-ink
+//   --color-white
+//   --color-green-muted  divider + label + eyebrow
+//   --color-green-dark   logos bar CTA button bg
+//   --color-green-mid    logos bar CTA button hover
+//   --color-divider      logos bar borders
+//   --font-body, --weight-bold, --weight-regular
+//   --tracking-tight, --tracking-wider, --tracking-wide
+//   --leading-tight, --leading-snug
+//   --text-base, --text-lg
+//   --space-2, --space-3, --space-4, --space-5, --space-6, --space-8, --space-10
+//   --space-16, --space-20
+//   --gutter-mobile, --gutter-tablet, --gutter-desktop
+//   --container-wide
+//   --radius-sm
+//   --duration-fast, --ease-default
+
+interface BentoCard {
+  eyebrow:  string;
+  title?:   string;
+  desc:     string;
+  imageSrc: string;
+}
+
+interface LogoItem {
+  src:    string;
+  alt:    string;
+  size?:  'large' | 'medium' | 'small';
+}
+
+interface Props {
+  label?:      string;
+  heading?:    string;
+  cards?:      BentoCard[];
+  logosBar?:   {
+    left?:    LogoItem[];
+    ctaEyebrow?: string;
+    ctaTitle?:   string;
+    ctaLabel?:   string;
+    ctaHref?:    string;
+    right?:   LogoItem[];
+  };
+}
+
+const {
+  label   = 'LA INICIATIVA',
+  heading = '¿Cómo vamos a hacerlo?',
+  cards   = [
+    {
+      eyebrow:  'La película',
+      title:    'La Tilma',
+      desc:     'Una producción de escala internacional que contará la historia real del milagro.',
+      imageSrc: '/placeholder-bento-1.jpg',
+    },
+    {
+      eyebrow:  'La plataforma',
+      desc:     'Un ecosistema digital diseñado para conectar a los creyentes.',
+      imageSrc: '/placeholder-bento-2.jpg',
+    },
+    {
+      eyebrow:  'La comunidad',
+      desc:     'Un movimiento vivo. Una red global de testimonios y voluntarios.',
+      imageSrc: '/placeholder-bento-3.jpg',
+    },
+  ],
+  logosBar = {
+    left:        [{ src: '/placeholder-logo-1.png', alt: 'Logo 1' }],
+    ctaEyebrow:  'TÚ TAMBIÉN PUEDES',
+    ctaTitle:    'SER PARTE',
+    ctaLabel:    'Descubre cómo',
+    ctaHref:     '#',
+    right:       [{ src: '/placeholder-logo-2.png', alt: 'Logo 2' }],
+  },
+} = Astro.props;
+
+const [mainCard, ...stackedCards] = cards;
+---
+
+<section class="bento-section" aria-labelledby="bento-heading">
+  <div class="bento-section__container">
+
+    <div class="bento-section__label-row" aria-hidden="true">
+      <span class="bento-section__divider"></span>
+      <span class="bento-section__label">{label}</span>
+      <span class="bento-section__divider"></span>
+    </div>
+
+    <h2 class="bento-section__heading" id="bento-heading">{heading}</h2>
+
+    <!-- Bento grid: 1 large left + N stacked right -->
+    <div class="bento-grid">
+
+      <div class="bento bento--main">
+        <img class="bento__bg" src={mainCard.imageSrc} alt="" aria-hidden="true" loading="lazy" decoding="async" />
+        <div class="bento__gradient" aria-hidden="true"></div>
+        <div class="bento__content">
+          <span class="bento__eyebrow">{mainCard.eyebrow}</span>
+          {mainCard.title && <h3 class="bento__title">{mainCard.title}</h3>}
+          <p class="bento__desc">{mainCard.desc}</p>
+        </div>
+      </div>
+
+      <div class="bento-col">
+        {stackedCards.map((card) => (
+          <div class="bento bento--stacked">
+            <img class="bento__bg" src={card.imageSrc} alt="" aria-hidden="true" loading="lazy" decoding="async" />
+            <div class="bento__gradient" aria-hidden="true"></div>
+            <div class="bento__content">
+              <span class="bento__eyebrow">{card.eyebrow}</span>
+              {card.title && <h3 class="bento__title">{card.title}</h3>}
+              <p class="bento__desc">{card.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+    </div>
+
+    <!-- Logos / CTA bar -->
+    {logosBar && (
+      <div class="bento-logos">
+
+        <div class="logos-col">
+          {logosBar.left?.map((logo) => (
+            <img src={logo.src} alt={logo.alt} loading="lazy" class="logos-img" />
+          ))}
+        </div>
+
+        <div class="logos-vdivider" aria-hidden="true"></div>
+
+        <div class="logos-col logos-col--cta">
+          {logosBar.ctaEyebrow && <p class="logos-eyebrow">{logosBar.ctaEyebrow}</p>}
+          {logosBar.ctaTitle   && <p class="logos-title">{logosBar.ctaTitle}</p>}
+          {logosBar.ctaHref    && <a href={logosBar.ctaHref} class="logos-btn">{logosBar.ctaLabel}</a>}
+        </div>
+
+        <div class="logos-vdivider" aria-hidden="true"></div>
+
+        <div class="logos-col">
+          {logosBar.right?.map((logo) => (
+            <img src={logo.src} alt={logo.alt} loading="lazy" class="logos-img" />
+          ))}
+        </div>
+
+      </div>
+    )}
+
+  </div>
+</section>
+
+<style>
+  .bento-section {
+    background-color: var(--color-bg);
+    padding-block: var(--space-20) 0;
+  }
+
+  .bento-section__container {
+    width: 100%;
+    max-width: var(--container-wide);
+    margin-inline: auto;
+    padding-inline: var(--gutter-mobile);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-10);
+  }
+
+  /* ── Dot-divider label ───────────────────────────────────────────────── */
+  .bento-section__label-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .bento-section__divider {
+    flex: 1;
+    height: 2px;
+    background-color: var(--color-green-muted);
+    position: relative;
+  }
+
+  .bento-section__divider::before,
+  .bento-section__divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--color-green-muted);
+  }
+
+  .bento-section__divider:first-child::before { left: 0; }
+  .bento-section__divider:first-child::after  { display: none; }
+  .bento-section__divider:last-child::after   { right: 0; }
+  .bento-section__divider:last-child::before  { display: none; }
+
+  .bento-section__label {
+    font-family: var(--font-body);
+    font-weight: var(--weight-regular);
+    font-size: var(--text-lg);
+    color: var(--color-green-muted);
+    letter-spacing: var(--tracking-wider);
+    white-space: nowrap;
+  }
+
+  /* ── Heading ─────────────────────────────────────────────────────────── */
+  .bento-section__heading {
+    font-family: var(--font-body);
+    font-weight: var(--weight-bold);
+    font-size: clamp(2.5rem, 4vw + 1rem, 5rem);
+    line-height: var(--leading-tight);
+    color: var(--color-ink);
+    letter-spacing: var(--tracking-tight);
+    text-align: center;
+  }
+
+  /* ── Bento grid ──────────────────────────────────────────────────────── */
+  .bento-grid {
+    display: grid;
+    grid-template-columns: 1.42fr 1fr;
+    gap: 20px;
+    align-items: stretch;
+  }
+
+  .bento {
+    border-radius: 20px;
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .bento--main {
+    position: relative;
+    overflow: hidden;
+    min-height: 540px;
+  }
+
+  .bento--stacked {
+    position: relative;
+    overflow: hidden;
+    flex: 1;
+    min-height: 0;
+    background-color: #111;
+  }
+
+  .bento__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .bento__gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      11deg,
+      rgba(0, 0, 0, 0.92) 8%,
+      rgba(102, 102, 102, 0) 60%
+    );
+    mix-blend-mode: multiply;
+  }
+
+  .bento__content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .bento-col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .bento__eyebrow {
+    font-family: var(--font-body);
+    font-weight: var(--weight-regular);
+    font-size: var(--text-base);
+    color: var(--color-green-muted);
+    line-height: 1;
+  }
+
+  .bento__title {
+    font-family: var(--font-body);
+    font-weight: var(--weight-bold);
+    font-size: clamp(3rem, 5vw, 5rem);
+    line-height: var(--leading-tight);
+    color: var(--color-white);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .bento__desc {
+    font-family: var(--font-body);
+    font-weight: var(--weight-regular);
+    font-size: clamp(1rem, 1.2vw + 0.4rem, 1.5rem);
+    line-height: var(--leading-snug);
+    color: var(--color-white);
+    max-width: 32ch;
+  }
+
+  /* ── Logos bar ───────────────────────────────────────────────────────── */
+  .bento-logos {
+    display: flex;
+    align-items: stretch;
+    min-height: 280px;
+    border-top: 1px solid var(--color-divider);
+    border-bottom: 1px solid var(--color-divider);
+    margin-top: var(--space-4);
+  }
+
+  .logos-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-5);
+    padding: var(--space-8);
+  }
+
+  .logos-col--cta {
+    gap: var(--space-3);
+    text-align: center;
+  }
+
+  .logos-vdivider {
+    width: 1px;
+    background-color: var(--color-divider);
+    flex-shrink: 0;
+    align-self: stretch;
+  }
+
+  .logos-img {
+    height: clamp(60px, 9vw, 137px);
+    width: auto;
+    object-fit: contain;
+  }
+
+  .logos-eyebrow {
+    font-family: var(--font-body);
+    font-weight: var(--weight-regular);
+    font-size: clamp(1rem, 1.5vw, 1.875rem);
+    color: var(--color-ink);
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .logos-title {
+    font-family: var(--font-body);
+    font-weight: var(--weight-bold);
+    font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+    color: var(--color-ink);
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .logos-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 41px;
+    padding-inline: var(--space-5);
+    background-color: var(--color-green-dark);
+    color: var(--color-white);
+    font-family: var(--font-body);
+    font-weight: var(--weight-regular);
+    font-size: var(--text-base);
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+    margin-top: var(--space-2);
+    transition: background-color var(--duration-fast) var(--ease-default);
+  }
+
+  .logos-btn:hover { background-color: var(--color-green-mid); }
+
+  @media (min-width: 768px)  { .bento-section__container { padding-inline: var(--gutter-tablet); } }
+  @media (min-width: 1024px) { .bento-section__container { padding-inline: var(--gutter-desktop); } }
+
+  @media (max-width: 767px) {
+    .bento-section { padding-block: var(--space-16) 0; }
+    .bento-section__container { gap: var(--space-8); }
+    .bento-grid { grid-template-columns: 1fr; }
+    .bento--main, .bento--stacked { min-height: 420px; }
+    .bento-logos { flex-direction: column; min-height: auto; }
+    .logos-vdivider { width: 100%; height: 1px; align-self: auto; }
+    .logos-col { padding: var(--space-6); }
+  }
+</style>

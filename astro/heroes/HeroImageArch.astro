@@ -1,0 +1,168 @@
+---
+// HeroImageArch — Light hero with arch bottom, image background, white scrim, dark text
+//
+// Required CSS variables:
+//   --color-bg           page background (arch blends in)
+//   --color-ink          heading and subtext
+//   --color-white
+//   --color-green-muted  CTA button bg
+//   --color-green-dark   CTA button hover
+//   --font-body, --weight-bold, --weight-regular
+//   --tracking-tight
+//   --leading-tight
+//   --space-2, --space-5
+//   --gutter-mobile, --gutter-tablet, --gutter-desktop
+//   --radius-sm
+//   --duration-fast, --ease-default
+
+interface Props {
+  imageSrc?:   string;
+  imageAlt?:   string;
+  heading?:    string;
+  subtext?:    string;
+  ctaLabel?:   string;
+  ctaHref?:    string;
+}
+
+const {
+  imageSrc  = '/placeholder-hero.jpg',
+  imageAlt  = '',
+  heading   = 'Un llamado de Ella.<br />Un proyecto de todos.',
+  subtext   = 'Guiados por el Espíritu Santo, y en comunión con la iglesia.',
+  ctaLabel  = 'Descubre más',
+  ctaHref   = '#',
+} = Astro.props;
+---
+
+<section class="hero-arch" aria-label="Hero">
+
+  <div class="hero-arch__bg" aria-hidden="true">
+    <img
+      class="hero-arch__img"
+      src={imageSrc}
+      alt={imageAlt}
+      loading="eager"
+      fetchpriority="high"
+      aria-hidden="true"
+    />
+    <div class="hero-arch__scrim"></div>
+  </div>
+
+  <div class="hero-arch__content">
+    <h1 class="hero-arch__heading" set:html={heading} />
+    <p class="hero-arch__subtext">{subtext}</p>
+    <div class="hero-arch__actions">
+      <a href={ctaHref} class="hero-arch__btn">{ctaLabel}</a>
+    </div>
+  </div>
+
+</section>
+
+<style>
+  .hero-arch {
+    position: relative;
+    width: 100%;
+    min-height: 100svh;
+    background-color: var(--color-bg);
+  }
+
+  .hero-arch__bg {
+    position: absolute;
+    inset: 0;
+    background-color: #ccc;
+    overflow: hidden;
+    border-radius: 0 0 50% 50% / 0 0 50vw 50vw;
+  }
+
+  .hero-arch__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+  }
+
+  .hero-arch__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.90) 0%,
+      rgba(255, 255, 255, 0.60) 30%,
+      rgba(255, 255, 255, 0.00) 60%
+    );
+    pointer-events: none;
+  }
+
+  .hero-arch__content {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    justify-content: flex-start;
+    gap: var(--space-5);
+    min-height: 100svh;
+    padding-top: 60px;
+    padding-inline: var(--gutter-mobile);
+    max-width: 1096px;
+    margin-inline: auto;
+  }
+
+  .hero-arch__heading {
+    font-family: var(--font-body);
+    font-weight: var(--weight-bold);
+    font-size: clamp(2rem, 2.5vw + 1rem, 3.75rem);
+    line-height: var(--leading-tight);
+    color: var(--color-ink);
+    letter-spacing: var(--tracking-tight);
+    max-width: 860px;
+  }
+
+  .hero-arch__subtext {
+    font-family: var(--font-body);
+    font-weight: var(--weight-regular);
+    font-size: clamp(1rem, 0.8vw + 0.6rem, 1.25rem);
+    line-height: 1.6;
+    color: var(--color-ink);
+    max-width: 641px;
+  }
+
+  .hero-arch__actions {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-2);
+  }
+
+  .hero-arch__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 41px;
+    padding-inline: var(--space-5);
+    font-family: var(--font-body);
+    font-weight: var(--weight-regular);
+    font-size: var(--text-base);
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    white-space: nowrap;
+    cursor: pointer;
+    background-color: var(--color-green-muted);
+    color: var(--color-white);
+    transition:
+      background-color var(--duration-fast) var(--ease-default),
+      color            var(--duration-fast) var(--ease-default);
+  }
+
+  .hero-arch__btn:hover { background-color: var(--color-green-dark); }
+
+  @media (min-width: 768px)  { .hero-arch__content { padding-inline: var(--gutter-tablet); } }
+  @media (min-width: 1024px) { .hero-arch__content { padding-inline: var(--gutter-desktop); } }
+
+  @media (max-width: 1024px) {
+    .hero-arch__heading { font-size: clamp(1.6rem, 6vw, 2.4rem); }
+  }
+</style>

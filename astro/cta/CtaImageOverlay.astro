@@ -1,0 +1,175 @@
+---
+// CtaImageOverlay — Background image + foreground overlay image + centered text + CTA button
+//
+// The background image (e.g., circle+rectangle) drives section height.
+// An overlay image (e.g., person/kid) is positioned absolutely above the background.
+// Text and CTA are centered at the bottom of the section.
+//
+// Required CSS variables:
+//   --color-bg
+//   --color-white
+//   --color-ink
+//   --color-green-muted  button bg
+//   --font-display, --font-body, --weight-bold, --weight-regular
+//   --tracking-wide
+//   --space-2, --space-3, --space-4, --space-5, --space-6
+//   --radius-sm
+//   --duration-fast, --ease-default
+
+interface Props {
+  backgroundSrc?:  string;
+  overlaySrc?:     string;
+  overlayAlt?:     string;
+  heading?:        string;
+  subtext?:        string;
+  body?:           string;
+  ctaLabel?:       string;
+  ctaHref?:        string;
+}
+
+const {
+  backgroundSrc = '/placeholder-bg.png',
+  overlaySrc    = '/placeholder-overlay.png',
+  overlayAlt    = '',
+  heading       = 'Tu puedes hacer esto posible',
+  subtext       = 'Este es el proyecto de María ¿Cuál es tu respuesta?',
+  body          = 'Texto de cuerpo opcional con más detalle sobre el llamado a la acción.',
+  ctaLabel      = 'DONAR',
+  ctaHref       = '#',
+} = Astro.props;
+---
+
+<section class="cta-overlay" aria-label={heading}>
+
+  <img
+    class="cta-overlay__bg"
+    src={backgroundSrc}
+    alt=""
+    aria-hidden="true"
+    loading="lazy"
+    decoding="async"
+  />
+
+  <img
+    class="cta-overlay__overlay"
+    src={overlaySrc}
+    alt={overlayAlt}
+    loading="lazy"
+    decoding="async"
+  />
+
+  <div class="cta-overlay__content">
+    <h2 class="cta-overlay__heading">{heading}</h2>
+    <p class="cta-overlay__sub">{subtext}</p>
+    {body && <p class="cta-overlay__body">{body}</p>}
+    <a href={ctaHref} class="cta-overlay__btn">{ctaLabel}</a>
+  </div>
+
+</section>
+
+<style>
+  .cta-overlay {
+    position: relative;
+    width: 100%;
+    background-color: var(--color-bg);
+    overflow: hidden;
+    margin-bottom: var(--space-16);
+  }
+
+  .cta-overlay__bg {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    object-position: center top;
+  }
+
+  .cta-overlay__overlay {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-20%);
+    height: 55%;
+    width: auto;
+    object-fit: contain;
+    object-position: bottom center;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .cta-overlay__content {
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: clamp(300px, 58vw, 880px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    text-align: center;
+    z-index: 3;
+    padding-inline: var(--space-6);
+  }
+
+  .cta-overlay__heading {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(2rem, 3.5vw + 0.5rem, 5rem);
+    line-height: 1.05;
+    color: var(--color-white);
+    margin: 0;
+  }
+
+  .cta-overlay__sub {
+    font-family: var(--font-body);
+    font-weight: var(--weight-bold);
+    font-size: clamp(0.875rem, 0.5vw + 0.6rem, 1.25rem);
+    color: var(--color-white);
+    margin: 0;
+  }
+
+  .cta-overlay__body {
+    font-family: var(--font-body);
+    font-weight: 300;
+    font-size: clamp(0.8rem, 0.4vw + 0.55rem, 1.1rem);
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0;
+  }
+
+  .cta-overlay__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 41px;
+    padding-inline: var(--space-5);
+    font-family: var(--font-body);
+    font-weight: var(--weight-regular);
+    font-size: var(--text-base);
+    letter-spacing: var(--tracking-wide);
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    white-space: nowrap;
+    cursor: pointer;
+    background-color: var(--color-green-muted);
+    color: var(--color-ink);
+    transition:
+      background-color var(--duration-fast) var(--ease-default),
+      color            var(--duration-fast) var(--ease-default);
+    margin-top: var(--space-2);
+  }
+
+  .cta-overlay__btn:hover { background-color: var(--color-white); }
+
+  @media (max-width: 767px) {
+    .cta-overlay__content {
+      width: clamp(280px, 88vw, 480px);
+      bottom: 4%;
+      gap: var(--space-3);
+    }
+
+    .cta-overlay__body { display: none; }
+    .cta-overlay__overlay { height: 45%; }
+  }
+</style>

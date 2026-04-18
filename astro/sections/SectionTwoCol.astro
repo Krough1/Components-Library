@@ -1,0 +1,196 @@
+---
+// SectionTwoCol — Dot-divider label + centered h2 + two-col image/text grid
+//
+// Required CSS variables:
+//   --color-bg
+//   --color-ink
+//   --color-green-muted  divider dots + label color
+//   --color-green-mid    heading accent color
+//   --font-body, --weight-bold, --weight-regular
+//   --tracking-tight, --tracking-wider
+//   --leading-tight, --leading-loose, --leading-snug
+//   --text-base, --text-lg
+//   --space-4, --space-5, --space-8, --space-10, --space-12, --space-16, --space-20, --space-24
+//   --gutter-mobile, --gutter-tablet, --gutter-desktop
+//   --container-wide
+//   --radius-sm
+
+interface Props {
+  label?:          string;
+  heading?:        string;
+  headingAccent?:  string;
+  subheading?:     string;
+  paragraphs?:     string[];
+  imageSrc?:       string;
+  imageAlt?:       string;
+}
+
+const {
+  label         = 'LA SECCIÓN',
+  heading       = 'Título principal de la sección',
+  headingAccent = 'a través de María',
+  subheading    = 'Un subtítulo descriptivo aquí.',
+  paragraphs    = [
+    'Primer párrafo con contenido relevante para esta sección.',
+    'Segundo párrafo con más información complementaria.',
+    'Tercer párrafo de cierre o llamada a la acción.',
+  ],
+  imageSrc = '/placeholder-image.jpg',
+  imageAlt = 'Descripción de la imagen',
+} = Astro.props;
+---
+
+<section class="two-col" aria-labelledby="two-col-heading">
+  <div class="two-col__container">
+
+    <div class="two-col__label-row" aria-hidden="true">
+      <span class="two-col__divider"></span>
+      <span class="two-col__label">{label}</span>
+      <span class="two-col__divider"></span>
+    </div>
+
+    <h2 class="two-col__heading" id="two-col-heading">
+      {heading} <em class="two-col__heading-accent">{headingAccent}</em>
+    </h2>
+
+    <div class="two-col__body">
+
+      <div class="two-col__image-col">
+        <img
+          src={imageSrc}
+          alt={imageAlt}
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+
+      <div class="two-col__text-col">
+        {subheading && <h3 class="two-col__subheading">{subheading}</h3>}
+        {paragraphs.map((p) => (
+          <p class="two-col__copy" set:html={p} />
+        ))}
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<style>
+  .two-col {
+    background-color: var(--color-bg);
+    padding-block: var(--space-20) var(--space-24);
+  }
+
+  .two-col__container {
+    width: 100%;
+    max-width: var(--container-wide);
+    margin-inline: auto;
+    padding-inline: var(--gutter-mobile);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-10);
+  }
+
+  /* ── Dot-divider label ───────────────────────────────────────────────── */
+  .two-col__label-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .two-col__divider {
+    flex: 1;
+    height: 2px;
+    background-color: var(--color-green-muted);
+    position: relative;
+  }
+
+  .two-col__divider::before,
+  .two-col__divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--color-green-muted);
+  }
+
+  .two-col__divider:first-child::before { left: 0; }
+  .two-col__divider:first-child::after  { display: none; }
+  .two-col__divider:last-child::after   { right: 0; }
+  .two-col__divider:last-child::before  { display: none; }
+
+  .two-col__label {
+    font-family: var(--font-body);
+    font-weight: var(--weight-regular);
+    font-size: var(--text-lg);
+    color: var(--color-green-muted);
+    letter-spacing: var(--tracking-wider);
+    white-space: nowrap;
+  }
+
+  /* ── Heading ─────────────────────────────────────────────────────────── */
+  .two-col__heading {
+    font-family: var(--font-body);
+    font-weight: var(--weight-bold);
+    font-size: clamp(2.25rem, 2vw + 1.5rem, 3.75rem);
+    line-height: var(--leading-tight);
+    color: var(--color-ink);
+    letter-spacing: var(--tracking-tight);
+    text-align: center;
+    font-style: normal;
+  }
+
+  .two-col__heading-accent {
+    color: var(--color-green-mid);
+    font-style: normal;
+  }
+
+  /* ── Body grid ───────────────────────────────────────────────────────── */
+  .two-col__body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-12);
+    align-items: start;
+  }
+
+  .two-col__image-col img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: var(--radius-sm);
+  }
+
+  .two-col__text-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .two-col__subheading {
+    font-family: var(--font-body);
+    font-weight: var(--weight-bold);
+    font-size: var(--text-base);
+    color: var(--color-ink);
+    line-height: var(--leading-snug);
+  }
+
+  .two-col__copy {
+    font-family: var(--font-body);
+    font-weight: var(--weight-regular);
+    font-size: var(--text-base);
+    line-height: var(--leading-loose);
+    color: var(--color-ink);
+  }
+
+  @media (min-width: 768px)  { .two-col__container { padding-inline: var(--gutter-tablet); } }
+  @media (min-width: 1024px) { .two-col__container { padding-inline: var(--gutter-desktop); } }
+
+  @media (max-width: 767px) {
+    .two-col { padding-block: var(--space-16) var(--space-20); }
+    .two-col__container { gap: var(--space-8); }
+    .two-col__body { grid-template-columns: 1fr; gap: var(--space-8); }
+  }
+</style>

@@ -1,0 +1,219 @@
+---
+// SectionTwoColCallout — Dot-divider label + large heading left + text/blockquote/CTA right
+//
+// Required CSS variables:
+//   --color-bg
+//   --color-ink
+//   --color-white
+//   --color-green-muted  divider + label + blockquote border
+//   --color-green-dark   button bg
+//   --color-green-mid    button hover
+//   --font-body, --weight-bold, --weight-regular
+//   --tracking-tight, --tracking-wider
+//   --leading-tight, --leading-loose
+//   --text-base, --text-lg
+//   --space-2, --space-3, --space-4, --space-5, --space-6, --space-7
+//   --space-8, --space-10, --space-16, --space-20, --space-24
+//   --gutter-mobile, --gutter-tablet, --gutter-desktop
+//   --container-wide
+//   --radius-sm
+//   --duration-fast, --ease-default
+
+interface Props {
+  label?:      string;
+  heading?:    string;
+  paragraphs?: string[];
+  callout?:    string[];
+  ctaLabel?:   string;
+  ctaHref?:    string;
+}
+
+const {
+  label      = 'ACERCA DE LA SECCIÓN',
+  heading    = 'Un título grande para el lado izquierdo',
+  paragraphs = [
+    'Primer párrafo con contenido relevante para esta sección.',
+    'Segundo párrafo con más información complementaria.',
+    'Tercer párrafo de cierre.',
+  ],
+  callout    = [
+    'Primera línea del blockquote con énfasis especial.',
+    'Segunda línea del blockquote con más contexto.',
+  ],
+  ctaLabel   = 'Conoce más',
+  ctaHref    = '#',
+} = Astro.props;
+---
+
+<section class="two-col-callout" aria-labelledby="two-col-callout-heading">
+  <div class="two-col-callout__container">
+
+    <div class="two-col-callout__label-row" aria-hidden="true">
+      <span class="two-col-callout__divider"></span>
+      <span class="two-col-callout__label">{label}</span>
+      <span class="two-col-callout__divider"></span>
+    </div>
+
+    <div class="two-col-callout__body">
+
+      <h2 class="two-col-callout__heading" id="two-col-callout-heading">
+        {heading}
+      </h2>
+
+      <div class="two-col-callout__text-col">
+        {paragraphs.map((p) => (
+          <p class="two-col-callout__copy">{p}</p>
+        ))}
+
+        {callout.length > 0 && (
+          <blockquote class="two-col-callout__callout">
+            {callout.map((line) => <p>{line}</p>)}
+          </blockquote>
+        )}
+
+        <div class="two-col-callout__action">
+          <a href={ctaHref} class="two-col-callout__btn">{ctaLabel}</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<style>
+  .two-col-callout {
+    background-color: var(--color-bg);
+    padding-block: var(--space-20) var(--space-24);
+  }
+
+  .two-col-callout__container {
+    width: 100%;
+    max-width: var(--container-wide);
+    margin-inline: auto;
+    padding-inline: var(--gutter-mobile);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-20);
+  }
+
+  /* ── Dot-divider label ───────────────────────────────────────────────── */
+  .two-col-callout__label-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .two-col-callout__divider {
+    flex: 1;
+    height: 2px;
+    background-color: var(--color-green-muted);
+    position: relative;
+  }
+
+  .two-col-callout__divider::before,
+  .two-col-callout__divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--color-green-muted);
+  }
+
+  .two-col-callout__divider:first-child::before { left: 0; }
+  .two-col-callout__divider:first-child::after  { display: none; }
+  .two-col-callout__divider:last-child::after   { right: 0; }
+  .two-col-callout__divider:last-child::before  { display: none; }
+
+  .two-col-callout__label {
+    font-family: var(--font-body);
+    font-weight: var(--weight-regular);
+    font-size: var(--text-lg);
+    color: var(--color-green-muted);
+    letter-spacing: var(--tracking-wider);
+    white-space: nowrap;
+  }
+
+  /* ── Body grid ───────────────────────────────────────────────────────── */
+  .two-col-callout__body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-16);
+    align-items: start;
+  }
+
+  .two-col-callout__heading {
+    font-family: var(--font-body);
+    font-weight: var(--weight-bold);
+    font-size: clamp(2.5rem, 4vw + 1rem, 5rem);
+    line-height: var(--leading-tight);
+    color: var(--color-ink);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .two-col-callout__text-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .two-col-callout__copy {
+    font-family: var(--font-body);
+    font-weight: var(--weight-regular);
+    font-size: clamp(1rem, 1vw + 0.5rem, 1.5rem);
+    line-height: var(--leading-loose);
+    color: var(--color-ink);
+  }
+
+  .two-col-callout__callout {
+    margin: 0;
+    padding: var(--space-6) var(--space-7);
+    border-left: 3px solid var(--color-green-muted);
+    background-color: rgba(151, 175, 161, 0.08);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .two-col-callout__callout p {
+    font-family: var(--font-body);
+    font-weight: var(--weight-regular);
+    font-style: italic;
+    font-size: clamp(0.9rem, 0.6vw + 0.6rem, 1.25rem);
+    line-height: 1.65;
+    color: var(--color-ink);
+    margin: 0;
+  }
+
+  .two-col-callout__action { margin-top: var(--space-2); }
+
+  .two-col-callout__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 41px;
+    padding-inline: var(--space-5);
+    background-color: var(--color-green-dark);
+    color: var(--color-white);
+    font-family: var(--font-body);
+    font-weight: var(--weight-regular);
+    font-size: var(--text-base);
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+    transition: background-color var(--duration-fast) var(--ease-default);
+  }
+
+  .two-col-callout__btn:hover { background-color: var(--color-green-mid); }
+
+  @media (min-width: 768px)  { .two-col-callout__container { padding-inline: var(--gutter-tablet); } }
+  @media (min-width: 1024px) { .two-col-callout__container { padding-inline: var(--gutter-desktop); } }
+
+  @media (max-width: 767px) {
+    .two-col-callout { padding-block: var(--space-16) var(--space-20); }
+    .two-col-callout__container { gap: var(--space-10); }
+    .two-col-callout__body { grid-template-columns: 1fr; gap: var(--space-8); }
+  }
+</style>
