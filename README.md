@@ -5,23 +5,20 @@ A personal collection of production-ready UI components extracted from real proj
 ## Structure
 
 ```
-/astro/       Astro (.astro) components
-/react/       React (.tsx) components
-/vanilla/     Plain HTML/CSS/JS
+/astro/
+  heroes/     Hero section variants
+  modals/     Modal / dialog components
+  cards/      Card components
+/react/
+/vanilla/
 ```
 
-## Usage
-
-Each component lives in its own folder with:
-- The component file(s)
-- A `README.md` with props, required CSS variables, assets, and usage example
-
-Copy the component file into your project, wire up the required CSS variables, and drop in your assets.
+Each component has its own `.astro` file + a `.md` file with props, CSS variables, assets needed, and a usage example.
 
 ## Components
 
-### Astro
+### Astro — Heroes
 
 | Component | Description |
 |-----------|-------------|
-| [Hero](./astro/Hero/) | Arch-bottom dark video hero with floating image and dual CTA buttons |
+| [HeroVideoArch](./astro/heroes/HeroVideoArch.astro) | Dark video background with arch-bottom cutout and floating image |
