@@ -1,0 +1,215 @@
+---
+// FaqAccordion — Numbered accordion FAQ section
+//
+// Uses native <details>/<summary> — no JavaScript required.
+// Each item shows a number, question text, and +/× icon.
+// Answer panel is indented to align with the question.
+//
+// Required CSS variables:
+//   --color-bg
+//   --color-ink
+//   --color-green-muted   number, question, icon color
+//   --color-divider       border between items
+//   --font-body
+//   --weight-regular
+//   --weight-bold
+//   --leading-tight, --leading-snug, --leading-loose
+//   --text-base
+//   --space-5, --space-10, --space-16, --space-20, --space-24
+//   --gutter-mobile, --gutter-tablet, --gutter-desktop
+//   --container-wide
+//   --duration-fast, --ease-default
+
+interface FaqItem {
+  q: string;
+  a: string;
+}
+
+interface Props {
+  heading?: string;
+  items?:   FaqItem[];
+}
+
+const {
+  heading = 'Preguntas frecuentes',
+  items   = [
+    { q: '¿Pregunta de ejemplo 1?', a: 'Respuesta de ejemplo para la primera pregunta.' },
+    { q: '¿Pregunta de ejemplo 2?', a: 'Respuesta de ejemplo para la segunda pregunta.' },
+    { q: '¿Pregunta de ejemplo 3?', a: 'Respuesta de ejemplo para la tercera pregunta.' },
+  ],
+} = Astro.props;
+---
+
+<section class="faqs" id="faqs" aria-labelledby="faqs-heading">
+  <div class="faqs__container">
+
+    <h2 class="faqs__heading" id="faqs-heading">{heading}</h2>
+
+    <dl class="faqs__list">
+      {items.map(({ q, a }, i) => (
+        <details class="faq">
+          <summary class="faq__summary">
+            <span class="faq__number" aria-hidden="true">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <span class="faq__question">{q}</span>
+            <span class="faq__icon"    aria-hidden="true"></span>
+          </summary>
+          <div class="faq__answer">
+            <p>{a}</p>
+          </div>
+        </details>
+      ))}
+    </dl>
+
+  </div>
+</section>
+
+<style>
+  /* ── Section wrapper ─────────────────────────────────────────────────── */
+  .faqs {
+    background-color: var(--color-bg);
+    padding-block: var(--space-20) var(--space-24);
+  }
+
+  .faqs__container {
+    width: 100%;
+    max-width: var(--container-wide);
+    margin-inline: auto;
+    padding-inline: var(--gutter-mobile);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-10);
+  }
+
+  /* ── Heading ─────────────────────────────────────────────────────────── */
+  .faqs__heading {
+    font-family: var(--font-body);
+    font-weight: var(--weight-bold);
+    font-size: clamp(2.5rem, 3vw + 1rem, 4.375rem);
+    line-height: var(--leading-tight);
+    color: var(--color-ink);
+    text-align: center;
+  }
+
+  /* ── List ────────────────────────────────────────────────────────────── */
+  .faqs__list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Individual item ─────────────────────────────────────────────────── */
+  .faq {
+    border-bottom: 1px solid var(--color-divider);
+  }
+
+  .faq summary { list-style: none; }
+  .faq summary::-webkit-details-marker { display: none; }
+
+  /* ── Summary row ─────────────────────────────────────────────────────── */
+  .faq__summary {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    height: 80px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .faq__summary:hover .faq__question { opacity: 0.75; }
+
+  /* ── Number ──────────────────────────────────────────────────────────── */
+  .faq__number {
+    font-family: var(--font-body);
+    font-weight: var(--weight-bold);
+    font-size: var(--text-base);
+    color: var(--color-green-muted);
+    min-width: 2ch;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  /* ── Question ────────────────────────────────────────────────────────── */
+  .faq__question {
+    flex: 1;
+    font-family: var(--font-body);
+    font-weight: var(--weight-bold);
+    font-size: clamp(1.1rem, 1.5vw + 0.3rem, 1.875rem);
+    color: var(--color-green-muted);
+    line-height: var(--leading-snug);
+    transition: opacity var(--duration-fast) var(--ease-default);
+  }
+
+  /* ── +/× icon (CSS only) ─────────────────────────────────────────────── */
+  .faq__icon {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    position: relative;
+  }
+
+  .faq__icon::before,
+  .faq__icon::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background-color: var(--color-green-muted);
+    border-radius: 2px;
+    transition: transform var(--duration-fast) var(--ease-default),
+                opacity   var(--duration-fast) var(--ease-default);
+  }
+
+  /* Horizontal bar */
+  .faq__icon::before {
+    width: 20px;
+    height: 2px;
+    transform: translate(-50%, -50%);
+  }
+
+  /* Vertical bar */
+  .faq__icon::after {
+    width: 2px;
+    height: 20px;
+    transform: translate(-50%, -50%);
+  }
+
+  /* On open: vertical bar rotates away → icon becomes − */
+  .faq[open] .faq__icon::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+    opacity: 0;
+  }
+
+  /* ── Answer panel ────────────────────────────────────────────────────── */
+  .faq__answer {
+    padding-block: 0 var(--space-5);
+    padding-inline-start: calc(2ch + 20px);
+  }
+
+  .faq__answer p {
+    font-family: var(--font-body);
+    font-weight: var(--weight-regular);
+    font-size: clamp(0.9rem, 0.8vw + 0.4rem, 1.25rem);
+    line-height: var(--leading-loose);
+    color: var(--color-ink);
+    max-width: 72ch;
+  }
+
+  /* ── Responsive ──────────────────────────────────────────────────────── */
+  @media (min-width: 768px) {
+    .faqs__container { padding-inline: var(--gutter-tablet); }
+  }
+
+  @media (min-width: 1024px) {
+    .faqs__container { padding-inline: var(--gutter-desktop); }
+  }
+
+  @media (max-width: 767px) {
+    .faqs { padding-block: var(--space-16) var(--space-20); }
+
+    .faq__summary {
+      height: auto;
+      padding-block: var(--space-5);
+    }
+  }
+</style>

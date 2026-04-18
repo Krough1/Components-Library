@@ -6,9 +6,10 @@ A personal collection of production-ready UI components extracted from real proj
 
 ```
 /astro/
-  heroes/     Hero section variants
-  modals/     Modal / dialog components
-  cards/      Card components
+  heroes/       Hero section variants
+  accordions/   FAQ and accordion components
+  modals/       Modal / dialog components
+  cards/        Card components
 /react/
 /vanilla/
 ```
@@ -22,3 +23,9 @@ Each component has its own `.astro` file + a `.md` file with props, CSS variable
 | Component | Description |
 |-----------|-------------|
 | [HeroVideoArch](./astro/heroes/HeroVideoArch.astro) | Dark video background with arch-bottom cutout and floating image |
+
+### Astro — Accordions
+
+| Component | Description |
+|-----------|-------------|
+| [FaqAccordion](./astro/accordions/FaqAccordion.astro) | Numbered FAQ accordion using native `<details>` — no JavaScript |
