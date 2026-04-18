@@ -1,0 +1,306 @@
+---
+// Hero — Arch-bottom dark video hero with floating image
+//
+// Layer order (bottom → top):
+//  1. hero__bg       dark container, clips video + scrim (overflow:hidden)
+//     └─ hero__video   background video
+//     └─ hero__scrim   dark gradient overlay
+//  2. hero__float    image that "rises" from the arch (outside clipped container)
+//  3. hero__content  text + CTA layer (z:10)
+//
+// Required CSS variables — define in your global stylesheet:
+//   --color-bg         page background color (used for arch corners blend)
+//   --color-white
+//   --color-ink        dark text color
+//   --color-green-dark CTA button hover color
+//   --font-display     display / heading font
+//   --font-body        body font
+//   --weight-regular
+//   --space-2, --space-5  spacing scale
+//   --gutter-mobile, --gutter-tablet, --gutter-desktop
+//   --container-wide   max content width
+//   --text-base        base font size
+//   --radius-sm        small border radius
+//   --leading-tight    tight line-height
+//   --tracking-tight   tight letter-spacing
+//   --duration-fast, --ease-default  transition tokens
+
+interface Props {
+  heading?:     string;
+  subtext?:     string;
+  ctaPrimary?:  { label: string; href: string };
+  ctaOutline?:  { label: string; href: string };
+  logoSrc?:     string;
+  logoAlt?:     string;
+  videoSrc?:    string;
+  floatSrc?:    string;
+  floatSrcMobile?: string;
+}
+
+const {
+  heading      = 'Your headline goes here',
+  subtext      = 'Your supporting subtext goes here.',
+  ctaPrimary   = { label: 'Primary CTA',  href: '#' },
+  ctaOutline   = { label: 'Secondary CTA', href: '#' },
+  logoSrc      = '/placeholder-logo.png',
+  logoAlt      = 'Logo',
+  videoSrc     = '/placeholder-video.mp4',
+  floatSrc     = '/placeholder-float.png',
+  floatSrcMobile = '/placeholder-float-mobile.png',
+} = Astro.props;
+---
+
+<section class="hero" aria-label="Hero">
+
+  <!-- ── 1. Dark video background ──────────────────────────────────────── -->
+  <div class="hero__bg" aria-hidden="true">
+    <video class="hero__video" autoplay muted loop playsinline>
+      <source src={videoSrc} type="video/mp4" />
+    </video>
+    <div class="hero__scrim"></div>
+
+    <!-- ── 2. Floating image (rises from arch) ──────────────────────────── -->
+    <picture>
+      <source srcset={floatSrcMobile} media="(max-width: 1024px)" />
+      <img
+        class="hero__float"
+        src={floatSrc}
+        alt=""
+        loading="eager"
+        fetchpriority="high"
+        aria-hidden="true"
+      />
+    </picture>
+  </div>
+
+  <!-- ── 3. Text content ───────────────────────────────────────────────── -->
+  <div class="hero__content">
+
+    <div class="hero__logo">
+      <img
+        src={logoSrc}
+        alt={logoAlt}
+        width="64"
+        height="60"
+        loading="eager"
+      />
+    </div>
+
+    <h1 class="hero__heading">{heading}</h1>
+    <p  class="hero__subtext">{subtext}</p>
+
+    <div class="hero__actions">
+      <a href={ctaPrimary.href}  class="hero__btn hero__btn--primary">{ctaPrimary.label}</a>
+      <a href={ctaOutline.href}  class="hero__btn hero__btn--outline">{ctaOutline.label}</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- Autoplay fallback: start on first user interaction if blocked -->
+<script is:inline>
+  (function () {
+    var v = document.querySelector('.hero__video');
+    if (!v) return;
+    var p = v.play();
+    if (p !== undefined) {
+      p.catch(function () {
+        document.addEventListener('click',      function () { v.play(); }, { once: true });
+        document.addEventListener('touchstart', function () { v.play(); }, { once: true });
+      });
+    }
+  })();
+</script>
+
+<style>
+  /* ── Section wrapper ─────────────────────────────────────────────────── */
+  .hero {
+    position: relative;
+    width: 100%;
+    min-height: 100svh;
+    background-color: var(--color-bg);
+  }
+
+  /* ── 1. Dark video container — arch bottom edge ──────────────────────── */
+  /*
+   * border-radius formula: 0 0 50% 50% / 0 0 50vw 50vw
+   * Horizontal radius = 50%  → arc spans full width
+   * Vertical radius   = 50vw → fixed circle radius at every viewport size
+   */
+  .hero__bg {
+    position: absolute;
+    inset: 0;
+    background-color: #0a0a0a;
+    overflow: hidden;
+    border-radius: 0 0 50% 50% / 0 0 50vw 50vw;
+  }
+
+  /* ── Video ───────────────────────────────────────────────────────────── */
+  .hero__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+  }
+
+  /* ── Scrim ───────────────────────────────────────────────────────────── */
+  .hero__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      180deg,
+      rgba(0,0,0,0.30)  0%,
+      rgba(0,0,0,0.10) 40%,
+      rgba(0,0,0,0.55) 100%
+    );
+    pointer-events: none;
+  }
+
+  /* ── Floating image ──────────────────────────────────────────────────── */
+  .hero__float {
+    position: absolute;
+    bottom: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: clamp(280px, 70vw, 1060px);
+    height: auto;
+    object-fit: contain;
+    object-position: bottom center;
+    z-index: 2;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(to top, transparent 0%, black 25%);
+            mask-image: linear-gradient(to top, transparent 0%, black 25%);
+  }
+
+  /* ── Text content ────────────────────────────────────────────────────── */
+  .hero__content {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    justify-content: flex-start;
+    gap: var(--space-5);
+    min-height: 100svh;
+    padding-top: 60px;
+    padding-bottom: 0;
+    padding-inline: var(--gutter-mobile);
+    max-width: 1096px;
+    margin-inline: auto;
+  }
+
+  /* ── Logo ────────────────────────────────────────────────────────────── */
+  .hero__logo img {
+    height: clamp(57px, 6.75vw, 102px);
+    width: auto;
+    filter: drop-shadow(0 2px 10px rgba(0,0,0,0.5));
+  }
+
+  /* ── Heading ─────────────────────────────────────────────────────────── */
+  .hero__heading {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(2rem, 2.5vw + 1rem, 3.75rem);
+    line-height: var(--leading-tight);
+    color: var(--color-white);
+    letter-spacing: var(--tracking-tight);
+    max-width: 860px;
+    text-shadow: 0 2px 14px rgba(0,0,0,0.40);
+  }
+
+  /* ── Subtext ─────────────────────────────────────────────────────────── */
+  .hero__subtext {
+    font-family: var(--font-body);
+    font-weight: var(--weight-regular);
+    font-size: clamp(1rem, 0.8vw + 0.6rem, 1.25rem);
+    line-height: 1.6;
+    color: rgba(255,255,255,0.88);
+    max-width: 641px;
+  }
+
+  /* ── Buttons ─────────────────────────────────────────────────────────── */
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-5);
+    justify-content: center;
+    margin-top: var(--space-2);
+  }
+
+  .hero__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 41px;
+    padding-inline: var(--space-5);
+    font-family: var(--font-body);
+    font-weight: var(--weight-regular);
+    font-size: var(--text-base);
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    white-space: nowrap;
+    cursor: pointer;
+    text-decoration: none;
+    transition:
+      background-color var(--duration-fast) var(--ease-default),
+      color            var(--duration-fast) var(--ease-default),
+      border-color     var(--duration-fast) var(--ease-default);
+  }
+
+  .hero__btn--primary {
+    background-color: var(--color-ink);
+    color: var(--color-white);
+    border-color: var(--color-ink);
+  }
+  .hero__btn--primary:hover {
+    background-color: var(--color-green-dark);
+    border-color: var(--color-green-dark);
+  }
+
+  .hero__btn--outline {
+    background-color: transparent;
+    color: var(--color-white);
+    border-color: var(--color-white);
+  }
+  .hero__btn--outline:hover {
+    background-color: rgba(255,255,255,0.12);
+  }
+
+  /* ── Responsive ──────────────────────────────────────────────────────── */
+  @media (min-width: 768px) {
+    .hero__content { padding-inline: var(--gutter-tablet); }
+  }
+
+  @media (min-width: 1024px) {
+    .hero__content { padding-inline: var(--gutter-desktop); }
+  }
+
+  @media (max-width: 1024px) {
+    .hero__float {
+      width: 100%;
+      height: auto;
+      bottom: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .hero__heading {
+      font-size: clamp(1.6rem, 6vw, 2.4rem);
+    }
+
+    .hero__actions {
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .hero__btn {
+      width: 100%;
+      max-width: 320px;
+    }
+  }
+</style>
